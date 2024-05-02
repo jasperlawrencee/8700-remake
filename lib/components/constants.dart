@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 const jPrimaryColor = Color.fromRGBO(224, 22, 61, 1);
@@ -17,3 +18,6 @@ const small = 13.28;
 const pre = 16.0;
 const code = 16.0;
 const blockquote = 16.0;
+
+final FirebaseFirestore db = FirebaseFirestore.instance;
+const String jbMenuCollection = 'jollibee-menu';

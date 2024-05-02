@@ -24,6 +24,10 @@ class MyApp extends StatelessWidget {
         fontFamily: "Inter",
         primaryColor: jPrimaryColor,
         scaffoldBackgroundColor: Colors.white,
+        textButtonTheme: const TextButtonThemeData(
+            style: ButtonStyle(
+          foregroundColor: MaterialStatePropertyAll(jPrimaryColor),
+        )),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
           elevation: 0,

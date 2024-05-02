@@ -1,9 +1,11 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:footer/footer.dart';
-import 'package:footer/footer_view.dart';
 import 'package:jollibee_commerce/components/constants.dart';
 import 'package:jollibee_commerce/components/widgets.dart';
+import 'package:jollibee_commerce/models/class_models.dart';
+import 'package:badges/badges.dart' as badges;
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -13,13 +15,59 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
+  List<Item> cart = [];
+  int itemCount = 1;
   String jollibeeLogo = 'assets/logo/jollibee-logo.png';
-  int count = 100;
+  int current = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          FutureBuilder<int>(
+              future: cartCount(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return badges.Badge(
+                    position: badges.BadgePosition.topEnd(top: -2, end: 2),
+                    badgeStyle:
+                        const badges.BadgeStyle(badgeColor: jSecondaryColor),
+                    badgeContent: Text("${cart.length}"),
+                    child: IconButton(
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return Container(
+                                child: Column(
+                                  children: [
+                                    cart.isEmpty
+                                        ? const Text('Add Items to Cart!')
+                                        : ListView.builder(
+                                            shrinkWrap: true,
+                                            itemCount: cart.length,
+                                            itemBuilder: (context, index) {
+                                              return Text(cart[index].name);
+                                            },
+                                          ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.shopping_basket_outlined,
+                          color: jSecondaryColor,
+                          size: h2,
+                        )),
+                  );
+                } else {
+                  return Container();
+                }
+              })
+        ],
         backgroundColor: jPrimaryColor,
         title: Row(
           children: [
@@ -54,36 +102,230 @@ class _WelcomePageState extends State<WelcomePage> {
           child: Container(
         width: MediaQuery.of(context).size.width - 100,
         height: double.infinity,
-        decoration: const BoxDecoration(color: jSecondaryColor),
+        decoration: const BoxDecoration(
+            color: jSecondaryColor,
+            borderRadius: BorderRadius.all(Radius.circular(4))),
         padding: const EdgeInsets.all(defaultPadding),
         margin: const EdgeInsets.all(defaultPadding),
-        child: Row(
-          children: [
-            Expanded(
-                flex: 2,
-                child: Container(
-                  color: Colors.black,
-                )),
-            Expanded(
-              flex: 6,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+        child: FutureBuilder<List<String>>(
+            future: getCategories(),
+            builder: (context, categories) {
+              if (categories.hasData) {
+                return Row(
                   children: [
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: count,
-                      itemBuilder: (context, index) {
-                        return Text('$index');
-                      },
-                    ),
+                    Expanded(
+                        flex: 1,
+                        child: Column(
+                          children: [
+                            ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: categories.data!.length,
+                              itemBuilder: (context, index) {
+                                return Column(
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          current = index;
+                                        });
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            bottom: defaultPadding),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              capitalize(
+                                                  categories.data![index]),
+                                              style: TextStyle(
+                                                fontWeight: current == index
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                                color: current == index
+                                                    ? jPrimaryColor
+                                                    : jTertiaryColor,
+                                              ),
+                                            ),
+                                            Icon(
+                                              Icons
+                                                  .keyboard_arrow_right_rounded,
+                                              color: current == index
+                                                  ? jPrimaryColor
+                                                  : jTertiaryColor,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    const Divider()
+                                  ],
+                                );
+                              },
+                            ),
+                          ],
+                        )),
+                    Expanded(
+                        flex: 6,
+                        child: StreamBuilder<List<Item>>(
+                            stream: Stream.fromFuture(
+                                getMenuItems(categories.data![current])),
+                            builder: (context, menuitems) {
+                              if (menuitems.hasData) {
+                                return Container(
+                                  decoration: const BoxDecoration(
+                                      color: Colors.black12,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(4))),
+                                  margin: const EdgeInsets.only(
+                                      left: defaultPadding),
+                                  padding: const EdgeInsets.all(defaultPadding),
+                                  child: GridView.builder(
+                                    itemCount: menuitems.data!.length,
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 3),
+                                    itemBuilder: (context, index) {
+                                      return MenuContainer(
+                                          price: menuitems.data![index].price,
+                                          name: menuitems.data![index].name,
+                                          function: () async {
+                                            itemCount = await showItemDialog(
+                                                    menuitems.data![index]) ??
+                                                -1;
+                                            if (itemCount != -1) {
+                                              for (int i = 0;
+                                                  i < itemCount;
+                                                  i++) {
+                                                cart.add(
+                                                    menuitems.data![index]);
+                                              }
+                                            }
+                                          },
+                                          menuCount: menuitems.data!.length);
+                                    },
+                                  ),
+                                );
+                              } else {
+                                return const Center(
+                                    child: CircularProgressIndicator(
+                                        color: jPrimaryColor));
+                              }
+                            }))
                   ],
-                ),
-              ),
-            ),
-          ],
-        ),
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(color: jPrimaryColor),
+                );
+              }
+            }),
       )),
     );
+  }
+
+  Future<int?> showItemDialog(Item item) async {
+    int counter = 1;
+    return showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Text(item.name),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      if (counter > 1) {
+                        setState(() {
+                          counter--;
+                        });
+                      }
+                    },
+                    icon: const Icon(Icons.remove)),
+                Text("$counter"),
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        counter++;
+                      });
+                    },
+                    icon: const Icon(Icons.add)),
+              ],
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(-1);
+                  },
+                  child: const Text('BACK')),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(counter);
+                  },
+                  child: const Text('ADD')),
+            ],
+          );
+        });
+      },
+    );
+  }
+
+  Future<List<String>> getCategories() async {
+    try {
+      List<String> categories = [];
+      QuerySnapshot querySnapshot = await db.collection(jbMenuCollection).get();
+      querySnapshot.docs.forEach((element) {
+        if (!categories.contains(element['category'])) {
+          categories.add(element['category']);
+        }
+      });
+      return categories;
+    } catch (e) {
+      log("error getting categories $e");
+      return [];
+    }
+  }
+
+  Future<List<Item>> getMenuItems(String category) async {
+    try {
+      List<Item> menuItems = [];
+      QuerySnapshot querySnapshot = await db
+          .collection(jbMenuCollection)
+          .where('category', isEqualTo: category)
+          .get();
+      querySnapshot.docs.forEach((e) {
+        menuItems.add(Item(
+          name: e['name'],
+          category: e['category'],
+          price: e['price'],
+        ));
+      });
+      return menuItems;
+    } catch (e) {
+      log("error getting menu items $e");
+      return [];
+    }
+  }
+
+  String capitalize(String input) {
+    List<String> words = input.split(' ');
+    List<String> capitalized = [];
+
+    words.forEach((word) {
+      if (word.isNotEmpty) {
+        String capitalizedWord =
+            word[0].toUpperCase() + word.substring(1).toLowerCase();
+        capitalized.add(capitalizedWord);
+      }
+    });
+    return capitalized.join(' ');
+  }
+
+  Future<int> cartCount() async {
+    return cart.length;
   }
 }
