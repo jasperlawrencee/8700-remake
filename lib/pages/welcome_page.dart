@@ -10,6 +10,7 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
+  GlobalKey formKey = GlobalKey();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   @override
@@ -50,14 +51,44 @@ class _WelcomePageState extends State<WelcomePage> {
       ),
       body: JollyBackground(
           child: Container(
-        width: 1000,
+        width: 500,
+        height: 500,
+        padding: const EdgeInsets.all(defaultPadding),
+        margin: const EdgeInsets.all(defaultPadding),
         decoration: const BoxDecoration(
           color: jSecondaryColor,
         ),
-        child: Row(
-          children: [
-            SizedBox(width: 500, child: Image.asset(gollyImage)),
-          ],
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Jolly Login!',
+                style: TextStyle(
+                  fontFamily: 'Jellee',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: jTertiaryColor,
+                ),
+              ),
+              Column(
+                children: [
+                  textField(emailController, 'Email'),
+                  textField(passwordController, 'Password'),
+                ],
+              ),
+              Column(
+                children: [
+                  const Divider(),
+                  AlreadyHaveAccountCheck(
+                    isLogin: true,
+                    onPress: () {},
+                  )
+                ],
+              )
+            ],
+          ),
         ),
       )),
     );

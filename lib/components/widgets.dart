@@ -118,7 +118,12 @@ class _MenuContainerState extends State<MenuContainer> {
 Widget textField(TextEditingController controller, String hint) {
   return TextFormField(
     controller: controller,
-    decoration: InputDecoration(hintText: hint),
+    cursorColor: jPrimaryColor,
+    style: const TextStyle(fontSize: h5),
+    decoration: InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(fontSize: h5),
+    ),
   );
 }
 
