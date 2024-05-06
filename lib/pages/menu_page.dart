@@ -1,11 +1,13 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jollibee_commerce/components/constants.dart';
 import 'package:jollibee_commerce/components/widgets.dart';
 import 'package:jollibee_commerce/models/class_models.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:jollibee_commerce/pages/cart_page.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -14,8 +16,10 @@ class WelcomePage extends StatefulWidget {
   State<WelcomePage> createState() => _WelcomePageState();
 }
 
+// List<Item> cart = [];
+List<Map<String, dynamic>> cart = [];
+
 class _WelcomePageState extends State<WelcomePage> {
-  List<Item> cart = [];
   int itemCount = 1;
   String jollibeeLogo = 'assets/logo/jollibee-logo.png';
   int current = 0;
@@ -33,30 +37,9 @@ class _WelcomePageState extends State<WelcomePage> {
                     position: badges.BadgePosition.topEnd(top: -2, end: 2),
                     badgeStyle:
                         const badges.BadgeStyle(badgeColor: jSecondaryColor),
-                    badgeContent: Text("${cart.length}"),
+                    badgeContent: Text("${snapshot.data}"),
                     child: IconButton(
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (context) {
-                              return Container(
-                                child: Column(
-                                  children: [
-                                    cart.isEmpty
-                                        ? const Text('Add Items to Cart!')
-                                        : ListView.builder(
-                                            shrinkWrap: true,
-                                            itemCount: cart.length,
-                                            itemBuilder: (context, index) {
-                                              return Text(cart[index].name);
-                                            },
-                                          ),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        },
+                        onPressed: viewCart,
                         icon: const Icon(
                           Icons.shopping_basket_outlined,
                           color: jSecondaryColor,
@@ -190,18 +173,9 @@ class _WelcomePageState extends State<WelcomePage> {
                                       return MenuContainer(
                                           price: menuitems.data![index].price,
                                           name: menuitems.data![index].name,
-                                          function: () async {
-                                            itemCount = await showItemDialog(
-                                                    menuitems.data![index]) ??
-                                                -1;
-                                            if (itemCount != -1) {
-                                              for (int i = 0;
-                                                  i < itemCount;
-                                                  i++) {
-                                                cart.add(
-                                                    menuitems.data![index]);
-                                              }
-                                            }
+                                          function: () {
+                                            addToCart(menuitems.data![index]);
+                                            setState(() {});
                                           },
                                           menuCount: menuitems.data!.length);
                                     },
@@ -225,6 +199,50 @@ class _WelcomePageState extends State<WelcomePage> {
     );
   }
 
+  Future<void> addToCart(Item item) async {
+    try {
+      Map<String, dynamic> meal = {
+        "name": item.name,
+        "price": item.price,
+        "amount": itemCount + 1, //plus one kay zero daan ang itemCount
+      };
+      itemCount = await showItemDialog(item) ?? -1;
+      if (itemCount != -1) {
+        for (int i = 0; i < itemCount; i++) {
+          cart.add(meal);
+        }
+      }
+      log("$cart");
+    } catch (e) {
+      log("error adding to cart $e");
+    }
+  }
+
+  Future<void> viewCart() async {
+    if (cart.isEmpty) {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => CupertinoAlertDialog(
+          title: const Text('Cart is Empty'),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('BACK'))
+          ],
+        ),
+      );
+    } else {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const CartPage(),
+          ));
+    }
+  }
+
   Future<int?> showItemDialog(Item item) async {
     int counter = 1;
     return showDialog(
@@ -232,7 +250,7 @@ class _WelcomePageState extends State<WelcomePage> {
       context: context,
       builder: (context) {
         return StatefulBuilder(builder: (context, setState) {
-          return AlertDialog(
+          return CupertinoAlertDialog(
             title: Text(item.name),
             content: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -245,7 +263,7 @@ class _WelcomePageState extends State<WelcomePage> {
                         });
                       }
                     },
-                    icon: const Icon(Icons.remove)),
+                    icon: const Icon(CupertinoIcons.minus)),
                 Text("$counter"),
                 IconButton(
                     onPressed: () {
@@ -253,7 +271,7 @@ class _WelcomePageState extends State<WelcomePage> {
                         counter++;
                       });
                     },
-                    icon: const Icon(Icons.add)),
+                    icon: const Icon(CupertinoIcons.add)),
               ],
             ),
             actions: [

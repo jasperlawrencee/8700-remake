@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jollibee_commerce/components/constants.dart';
 
@@ -61,11 +62,12 @@ class MenuContainer extends StatefulWidget {
 class _MenuContainerState extends State<MenuContainer> {
   @override
   Widget build(BuildContext context) {
-    List<bool> menuValues = List.generate(widget.menuCount, (index) => false);
     return Container(
       margin: const EdgeInsets.all(defaultPadding / 2),
       padding: const EdgeInsets.only(top: defaultPadding),
-      decoration: const BoxDecoration(color: jSecondaryColor),
+      decoration: const BoxDecoration(
+          color: jSecondaryColor,
+          borderRadius: BorderRadius.all(Radius.circular(4))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -74,22 +76,24 @@ class _MenuContainerState extends State<MenuContainer> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Padding(
-                padding: const EdgeInsets.only(right: defaultPadding),
-                child: IconButton(
-                  style: const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(jPrimaryColor),
-                      iconColor: MaterialStatePropertyAll(jSecondaryColor)),
-                  onPressed: widget.function,
-                  icon: const Icon(Icons.add),
-                ),
-              )
+                  padding: const EdgeInsets.only(right: defaultPadding),
+                  child: InkWell(
+                    onTap: widget.function,
+                    child: const Icon(
+                      CupertinoIcons.add,
+                      color: jPrimaryColor,
+                    ),
+                  ))
             ],
           ),
           Container(
               height: 100,
               width: double.infinity,
               padding: const EdgeInsets.all(defaultPadding),
-              decoration: const BoxDecoration(color: jPrimaryColor),
+              decoration: const BoxDecoration(
+                  color: jPrimaryColor,
+                  borderRadius: BorderRadiusDirectional.vertical(
+                      bottom: Radius.circular(4))),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
