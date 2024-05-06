@@ -9,17 +9,16 @@ import 'package:jollibee_commerce/models/class_models.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:jollibee_commerce/pages/cart_page.dart';
 
-class WelcomePage extends StatefulWidget {
-  const WelcomePage({super.key});
+class MenuPage extends StatefulWidget {
+  const MenuPage({super.key});
 
   @override
-  State<WelcomePage> createState() => _WelcomePageState();
+  State<MenuPage> createState() => _MenuPageState();
 }
 
-// List<Item> cart = [];
 List<Map<String, dynamic>> cart = [];
 
-class _WelcomePageState extends State<WelcomePage> {
+class _MenuPageState extends State<MenuPage> {
   int itemCount = 1;
   String jollibeeLogo = 'assets/logo/jollibee-logo.png';
   int current = 0;

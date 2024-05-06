@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:jollibee_commerce/components/constants.dart';
 import 'package:jollibee_commerce/firebase_options.dart';
 import 'package:jollibee_commerce/pages/menu_page.dart';
+import 'package:jollibee_commerce/pages/welcome_page.dart';
 
 void main() async {
   await Firebase.initializeApp(

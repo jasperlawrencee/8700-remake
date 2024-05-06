@@ -114,3 +114,45 @@ class _MenuContainerState extends State<MenuContainer> {
     );
   }
 }
+
+Widget textField(TextEditingController controller, String hint) {
+  return TextFormField(
+    controller: controller,
+    decoration: InputDecoration(hintText: hint),
+  );
+}
+
+class AlreadyHaveAccountCheck extends StatelessWidget {
+  bool isLogin;
+  final Function()? onPress;
+
+  AlreadyHaveAccountCheck({
+    Key? key,
+    required this.isLogin,
+    this.onPress,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          isLogin ? "Don't have an account?" : "Already have an account?",
+          style: const TextStyle(color: jTertiaryColor),
+        ),
+        const SizedBox(width: defaultPadding),
+        InkWell(
+          onTap: onPress as void Function(),
+          child: Text(
+            isLogin ? "Sign Up" : "Sign In",
+            style: const TextStyle(
+              color: jPrimaryColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

@@ -21,3 +21,6 @@ const blockquote = 16.0;
 
 final FirebaseFirestore db = FirebaseFirestore.instance;
 const String jbMenuCollection = 'jollibee-menu';
+
+const String jollibeeLogo = 'assets/logo/jollibee-logo.png';
+const String gollyImage = 'assets/images/gollybee.png';

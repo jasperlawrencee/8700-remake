@@ -13,8 +13,6 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  String jollibeeLogo = 'assets/logo/jollibee-logo.png';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
