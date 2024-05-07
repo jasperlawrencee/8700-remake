@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:jollibee_commerce/components/constants.dart';
 import 'package:jollibee_commerce/components/widgets.dart';
 import 'package:jollibee_commerce/pages/menu_page.dart';

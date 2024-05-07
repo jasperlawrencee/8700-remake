@@ -115,12 +115,30 @@ class _MenuContainerState extends State<MenuContainer> {
   }
 }
 
-Widget textField(TextEditingController controller, String hint) {
+SnackBar bottomSnackbar(String content) {
+  return SnackBar(content: Text(content));
+}
+
+Widget textFormFieldWithIcon(
+    TextEditingController controller, String hint, Icon icon, bool isPassword) {
   return TextFormField(
+    validator: (String? value) {
+      if (value == null || value.isEmpty) {
+        return 'Please enter some text';
+      } else if (value.length < 6) {
+        return 'Forms need more than 6 characters';
+      }
+      return null;
+    },
     controller: controller,
     cursorColor: jPrimaryColor,
     style: const TextStyle(fontSize: h5),
+    obscureText: isPassword,
     decoration: InputDecoration(
+      prefixIcon: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+        child: icon,
+      ),
       hintText: hint,
       hintStyle: const TextStyle(fontSize: h5),
     ),
@@ -160,4 +178,22 @@ class AlreadyHaveAccountCheck extends StatelessWidget {
       ],
     );
   }
+}
+
+void addItemDialog(BuildContext context) {
+  showCupertinoDialog(
+    context: context,
+    builder: (context) => CupertinoAlertDialog(
+      title: const Text('Add a Menu Item'),
+      content: Column(),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Cancel')),
+        TextButton(onPressed: () {}, child: const Text('Add')),
+      ],
+    ),
+  );
 }

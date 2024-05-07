@@ -2,10 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:jollibee_commerce/components/constants.dart';
 import 'package:jollibee_commerce/firebase_options.dart';
-import 'package:jollibee_commerce/pages/menu_page.dart';
 import 'package:jollibee_commerce/pages/welcome_page.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
             style: ElevatedButton.styleFrom(
           elevation: 0,
           backgroundColor: jPrimaryColor,
+          foregroundColor: jSecondaryColor,
           shape: const StadiumBorder(),
           maximumSize: const Size(double.infinity, 56),
           minimumSize: const Size(double.infinity, 56),
