@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -7,6 +11,7 @@ import 'package:jollibee_commerce/pages/menu_page.dart';
 
 class CartPage extends StatefulWidget {
   List<Map<String, dynamic>> cart = [];
+
   CartPage({
     super.key,
     required this.cart,
@@ -17,6 +22,9 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
+  User? currentUser = FirebaseAuth.instance.currentUser;
+  late num totalPrice;
+
   Future<void> subtractItem(int index) async {
     setState(() {
       widget.cart[index]['amount']--;
@@ -62,6 +70,44 @@ class _CartPageState extends State<CartPage> {
         );
       },
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    List<double> prices = widget.cart.map((e) => e['price'] as double).toList();
+    totalPrice = prices.reduce((a, b) => a + b);
+  }
+
+  Future<void> submitOrder() async {
+    try {
+      DocumentReference docRef = await db
+          .collection('users')
+          .doc(currentUser!.uid)
+          .collection('orders')
+          .add({
+        'orderDateTime': DateTime.now(),
+        'email': currentUser!.email,
+        'order': widget.cart,
+        'reference': '',
+        'totalPrice': totalPrice,
+      });
+      await docRef.update({'reference': docRef.id});
+      await db.collection('users').doc(adminUid).collection('orders').add({
+        'orderDateTime': DateTime.now(),
+        'email': currentUser!.email,
+        'order': widget.cart,
+        'reference': docRef.id,
+        'totalPrice': totalPrice,
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(bottomSnackbar('Order added!'));
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      log('error submitting order $e');
+    }
   }
 
   @override
@@ -182,7 +228,10 @@ class _CartPageState extends State<CartPage> {
                         }
                       },
                     ),
-                  )
+                  ),
+            ElevatedButton(
+                onPressed: widget.cart.isEmpty ? null : submitOrder,
+                child: const Text('Order'))
           ],
         ),
       )),

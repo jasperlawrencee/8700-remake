@@ -210,7 +210,24 @@ class ItemsTabState extends State<ItemsTab> {
                 shrinkWrap: true,
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
-                  return Text(snapshot.data![index].name);
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Text(snapshot.data![index].name),
+                          const SizedBox(width: defaultPadding),
+                          Text(
+                            "PHP ${snapshot.data![index].price}",
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: jPrimaryColor),
+                          ),
+                        ],
+                      ),
+                      Text(snapshot.data![index].category.toUpperCase()),
+                    ],
+                  );
                 },
               ),
             );
