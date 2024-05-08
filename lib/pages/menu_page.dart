@@ -19,11 +19,9 @@ class MenuPage extends StatefulWidget {
   State<MenuPage> createState() => _MenuPageState();
 }
 
-List<Map<String, dynamic>> cart = [];
-
 class _MenuPageState extends State<MenuPage> {
-  int itemCount = 1;
   int categoryIndex = 0;
+  List<Map<String, dynamic>> cart = [];
 
   void _showBackDialog() {
     showCupertinoDialog(
@@ -213,7 +211,6 @@ class _MenuPageState extends State<MenuPage> {
                                             price: menuitems.data![index].price,
                                             name: menuitems.data![index].name,
                                             function: () {
-                                              setState(() => itemCount = 1);
                                               addToCart(menuitems.data![index]);
                                               setState(() {});
                                             },
@@ -259,14 +256,18 @@ class _MenuPageState extends State<MenuPage> {
 
   Future<void> addToCart(Item item) async {
     try {
-      Map<String, dynamic> meal = {
-        "name": item.name,
-        "price": item.price,
-        "amount": itemCount,
-      };
-      itemCount = await showItemDialog(item) ?? -1;
+      int existingItem = cart.indexWhere((m) => m['name'] == item.name);
+      int initalItemCount = 1;
+      if (existingItem != -1) {
+        initalItemCount = cart[existingItem]['amount'];
+      }
+      int itemCount = await showItemDialog(item, initalItemCount) ?? -1;
       if (itemCount != -1) {
-        int existingItem = cart.indexWhere((m) => m['name'] == item.name);
+        Map<String, dynamic> meal = {
+          "name": item.name,
+          "price": item.price,
+          "amount": itemCount,
+        };
         if (existingItem != -1) {
           cart[existingItem]['amount'] += itemCount;
         } else {
@@ -299,12 +300,14 @@ class _MenuPageState extends State<MenuPage> {
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const CartPage(),
+            builder: (context) => CartPage(
+              cart: cart,
+            ),
           ));
     }
   }
 
-  Future<int?> showItemDialog(Item item) async {
+  Future<int?> showItemDialog(Item item, int initialItemCount) async {
     return showDialog(
       barrierDismissible: false,
       context: context,
@@ -317,18 +320,18 @@ class _MenuPageState extends State<MenuPage> {
               children: [
                 IconButton(
                     onPressed: () {
-                      if (itemCount > 1) {
+                      if (initialItemCount > 1) {
                         setState(() {
-                          itemCount--;
+                          initialItemCount--;
                         });
                       }
                     },
                     icon: const Icon(CupertinoIcons.minus)),
-                Text("$itemCount"),
+                Text("$initialItemCount"),
                 IconButton(
                     onPressed: () {
                       setState(() {
-                        itemCount++;
+                        initialItemCount++;
                       });
                     },
                     icon: const Icon(CupertinoIcons.add)),
@@ -342,7 +345,7 @@ class _MenuPageState extends State<MenuPage> {
                   child: const Text('BACK')),
               TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop(itemCount);
+                    Navigator.of(context).pop(initialItemCount);
                   },
                   child: const Text('ADD')),
             ],
