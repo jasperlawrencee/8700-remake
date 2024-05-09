@@ -26,20 +26,20 @@ const String jollibeeLogo = 'assets/logo/jollibee-logo.png';
 const String gollyImage = 'assets/images/gollybee.png';
 const String adminUid = '04RJzN0RkKQiWzmn9Qv2Z6kwUQs1';
 
-const List<Widget> mealCategories = [
-  Text("Family Meals"),
-  Text("Breakfast"),
-  Text("Chickenjoy"),
-  Text("Chicken Nuggets"),
-  Text("Burgers"),
-  Text("Jolly Spaghetti"),
-  Text("Burger Steak"),
-  Text("Super Meals"),
-  Text("Chicken Sandwich"),
-  Text("Jolly Hotdog and Pies"),
-  Text("Palabok"),
-  Text("Fries and Sides"),
-  Text("Deserts"),
-  Text("Beverages"),
-  Text("Jollibee Kiddie Meal"),
+const List<String> mealCategories = [
+  "Family Meals",
+  "Breakfast",
+  "Chickenjoy",
+  "Chicken Nuggets",
+  "Burgers",
+  "Jolly Spaghetti",
+  "Burger Steak",
+  "Super Meals",
+  "Chicken Sandwich",
+  "Jolly Hotdog and Pies",
+  "Palabok",
+  "Fries and Sides",
+  "Deserts",
+  "Beverages",
+  "Jollibee Kiddie Meal",
 ];

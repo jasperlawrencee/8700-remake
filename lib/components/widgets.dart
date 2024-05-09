@@ -1,10 +1,8 @@
 // ignore_for_file: must_be_immutable
 
-import 'dart:developer';
-
-import 'package:dropdown_cupertino/dropdown_cupertino.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jollibee_commerce/components/constants.dart';
 
 class JollyBackground extends StatelessWidget {
@@ -123,7 +121,10 @@ SnackBar bottomSnackbar(String content) {
 }
 
 Widget textFormFieldWithIcon(
-    TextEditingController controller, String hint, Icon icon, bool isPassword) {
+    {required TextEditingController controller,
+    required String hint,
+    required Icon icon,
+    required bool isPassword}) {
   return TextFormField(
     validator: (String? value) {
       if (value == null || value.isEmpty) {
@@ -153,7 +154,7 @@ class AlreadyHaveAccountCheck extends StatelessWidget {
   final Function()? onPress;
 
   AlreadyHaveAccountCheck({
-    Key? key,
+    super.key,
     required this.isLogin,
     this.onPress,
   });
@@ -181,54 +182,4 @@ class AlreadyHaveAccountCheck extends StatelessWidget {
       ],
     );
   }
-}
-
-void addItemDialog(BuildContext context) {
-  int selectValue = 0;
-  showDialog(
-    context: context,
-    builder: (context) => StatefulBuilder(builder: (context, setState) {
-      return CupertinoAlertDialog(
-        title: const Text('Add a Menu Item'),
-        content: SizedBox(
-          width: MediaQuery.of(context).size.width * .70,
-          child: Column(
-            children: [
-              CupertinoButton(
-                color: jPrimaryColor,
-                onPressed: () => showCupertinoModalPopup(
-                  context: context,
-                  builder: (_) => SizedBox(
-                    width: double.infinity,
-                    height: 250,
-                    child: CupertinoPicker(
-                      itemExtent: 30,
-                      scrollController: FixedExtentScrollController(
-                        initialItem: 1,
-                      ),
-                      onSelectedItemChanged: (int value) {
-                        setState(() {
-                          selectValue = value;
-                        });
-                      },
-                      children: mealCategories,
-                    ),
-                  ),
-                ),
-                child: mealCategories.first,
-              )
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel')),
-          TextButton(onPressed: () {}, child: const Text('Add')),
-        ],
-      );
-    }),
-  );
 }

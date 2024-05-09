@@ -156,14 +156,25 @@ class _SignupFormState extends State<SignupForm> {
             ),
             Column(
               children: [
-                textFormFieldWithIcon(widget.username, 'Username',
-                    const Icon(CupertinoIcons.person), false),
+                textFormFieldWithIcon(
+                    controller: widget.username,
+                    hint: 'Username',
+                    icon: const Icon(CupertinoIcons.person),
+                    isPassword: false),
                 const SizedBox(height: defaultPadding),
-                textFormFieldWithIcon(widget.email, 'Email',
-                    const Icon(CupertinoIcons.mail), false),
+                textFormFieldWithIcon(
+                  controller: widget.email,
+                  hint: 'Email',
+                  icon: const Icon(CupertinoIcons.mail),
+                  isPassword: false,
+                ),
                 const SizedBox(height: defaultPadding),
-                textFormFieldWithIcon(widget.password, 'Password',
-                    const Icon(CupertinoIcons.lock), true),
+                textFormFieldWithIcon(
+                  controller: widget.password,
+                  hint: 'Password',
+                  icon: const Icon(CupertinoIcons.lock),
+                  isPassword: true,
+                ),
                 const SizedBox(height: defaultPadding),
                 ElevatedButton(
                     onPressed: () {
@@ -268,11 +279,19 @@ class _LoginFormState extends State<LoginForm> {
             ),
             Column(
               children: [
-                textFormFieldWithIcon(widget.email, 'Email',
-                    const Icon(CupertinoIcons.mail), false),
+                textFormFieldWithIcon(
+                  controller: widget.email,
+                  hint: 'Email',
+                  icon: const Icon(CupertinoIcons.mail),
+                  isPassword: false,
+                ),
                 const SizedBox(height: defaultPadding),
-                textFormFieldWithIcon(widget.password, 'Password',
-                    const Icon(CupertinoIcons.lock), true),
+                textFormFieldWithIcon(
+                  controller: widget.password,
+                  hint: 'Password',
+                  icon: const Icon(CupertinoIcons.lock),
+                  isPassword: true,
+                ),
                 const SizedBox(height: defaultPadding),
                 ElevatedButton(
                     onPressed: () {
